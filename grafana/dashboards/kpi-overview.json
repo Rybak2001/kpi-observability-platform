@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "title": "KPI Overview",
+    "panels": [
+      {
+        "title": "Métricas por Día",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "rawSql": "SELECT period_date AS time, metric_name, metric_value FROM kpi_metrics ORDER BY period_date",
+            "format": "time_series"
+          }
+        ]
+      },
+      {
+        "title": "Promedio por Métrica",
+        "type": "barchart",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "rawSql": "SELECT metric_name, ROUND(AVG(metric_value)::numeric, 2) as avg FROM kpi_metrics GROUP BY metric_name",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "title": "Conteo por Fuente",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "targets": [
+          {
+            "rawSql": "SELECT s.name, COUNT(*) FROM kpi_metrics m JOIN kpi_sources s ON s.id = m.source_id GROUP BY s.name",
+            "format": "table"
+          }
+        ]
+      }
+    ]
+  }
+}

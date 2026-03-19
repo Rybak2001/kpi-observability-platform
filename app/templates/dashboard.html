@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPI Observability Platform</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <span class="logo">📊 KPI Observatory</span>
+    <div class="nav-actions">
+      <a href="/api/export/csv" class="btn-export">📥 Exportar CSV</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>Dashboard de Indicadores</h1>
+
+    <!-- Summary Cards -->
+    <section class="cards">
+      {% for s in summary %}
+      <div class="card">
+        <h3>{{ s.metric_name }}</h3>
+        <div class="card-value">{{ s.avg_val }}</div>
+        <div class="card-meta">
+          <span>Min: {{ s.min_val }}</span>
+          <span>Max: {{ s.max_val }}</span>
+          <span>Datos: {{ s.data_points }}</span>
+        </div>
+      </div>
+      {% endfor %}
+      {% if not summary %}
+      <p class="empty">No hay métricas registradas. Ejecuta el ETL o carga datos vía API.</p>
+      {% endif %}
+    </section>
+
+    <!-- Sources -->
+    <section class="section">
+      <h2>Fuentes de Datos</h2>
+      <div class="source-list">
+        {% for src in sources %}
+        <div class="source-item">
+          <span class="source-name">{{ src.name }}</span>
+          <span class="source-type">{{ src.source_type }}</span>
+        </div>
+        {% endfor %}
+        {% if not sources %}
+        <p class="empty">No hay fuentes registradas.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Latest Metrics Table -->
+    <section class="section">
+      <h2>Últimas Métricas</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Métrica</th>
+            <th>Valor</th>
+            <th>Unidad</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in latest %}
+          <tr>
+            <td>{{ m.source_name }}</td>
+            <td>{{ m.metric_name }}</td>
+            <td class="val">{{ m.metric_value }}</td>
+            <td>{{ m.unit }}</td>
+            <td>{{ m.period_date }}</td>
+          </tr>
+          {% endfor %}
+          {% if not latest %}
+          <tr><td colspan="5" class="empty">Sin datos</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

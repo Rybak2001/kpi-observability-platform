@@ -3,6 +3,7 @@ from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.db import query, execute
+from app.utils.rate_limit import rate_limit
 
 bp = Blueprint("auth", __name__)
 
@@ -35,6 +36,7 @@ def get_current_user():
 
 
 @bp.route("/login", methods=["GET", "POST"])
+@rate_limit(max_attempts=5, window_seconds=60, message="Demasiados intentos de inicio de sesión")
 def login():
     if "user_id" in session:
         return redirect(url_for("dashboard.index"))

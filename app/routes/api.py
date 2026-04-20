@@ -1,16 +1,19 @@
 from flask import Blueprint, jsonify, request
 from app.db import query, execute
+from app.routes.auth import login_required
 
 bp = Blueprint("api", __name__)
 
 
 @bp.route("/sources", methods=["GET"])
+@login_required
 def get_sources():
     rows = query("SELECT * FROM kpi_sources ORDER BY name")
     return jsonify(rows)
 
 
 @bp.route("/sources", methods=["POST"])
+@login_required
 def create_source():
     data = request.get_json()
     if not data or not data.get("name"):
@@ -23,6 +26,7 @@ def create_source():
 
 
 @bp.route("/metrics", methods=["GET"])
+@login_required
 def get_metrics():
     source_id = request.args.get("source_id")
     metric = request.args.get("metric")
@@ -46,6 +50,7 @@ def get_metrics():
 
 
 @bp.route("/metrics", methods=["POST"])
+@login_required
 def create_metric():
     data = request.get_json()
     required = ["source_id", "metric_name", "metric_value", "period_date"]
@@ -59,6 +64,7 @@ def create_metric():
 
 
 @bp.route("/metrics/summary", methods=["GET"])
+@login_required
 def metrics_summary():
     rows = query("""
         SELECT metric_name,
@@ -74,6 +80,7 @@ def metrics_summary():
 
 
 @bp.route("/export/csv", methods=["GET"])
+@login_required
 def export_csv():
     rows = query("""
         SELECT m.metric_name, m.metric_value, m.unit, m.period_date, s.name as source_name
